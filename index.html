@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -145,38 +146,6 @@
             <p>电话：123-456-7890</p>
             <p>邮箱：info@church.com</p>
         </div>
-<head>
-    <!-- 省略头部内容 -->
-</head>
-<body>
-    <!-- 省略主体内容 -->
-    <div id="chat" class="content-section">
-        <h2>连线聊天</h2>
-        <div class="chat-container">
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input">
-                <input type="text" id="chat-input" placeholder="输入消息...">
-                <button onclick="sendMessage()">发送</button>
-                <button onclick="startVoiceChat()">语音聊天</button>
-            </div>
-        </div>
-    </div>
-    <!-- 省略脚部内容 -->
-    <script>
-        // WebSocket 代码省略
-
-        function startVoiceChat() {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                .then(stream => {
-                    const audio = document.createElement('audio');
-                    audio.srcObject = stream;
-                    audio.play();
-                })
-                .catch(err => {
-                    console.error('获取音频流失败:', err);
-                });
-        }
-    </script>
         <div id="chat" class="content-section">
             <h2>连线聊天</h2>
             <div class="chat-container">
@@ -184,48 +153,17 @@
                 <div class="chat-input">
                     <input type="text" id="chat-input" placeholder="输入消息...">
                     <button onclick="sendMessage()">发送</button>
+                    <button onclick="startVoiceChat()">语音聊天</button>
                 </div>
-            </div>
-        </div><head>
-    <!-- 省略头部内容 -->
-</head>
-<body>
-    <!-- 省略主体内容 -->
-    <div id="chat" class="content-section">
-        <h2>连线聊天</h2>
-        <div class="chat-container">
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input">
-                <input type="text" id="chat-input" placeholder="输入消息...">
-                <button onclick="sendMessage()">发送</button>
-                <button onclick="startVoiceChat()">语音聊天</button>
             </div>
         </div>
-    </div>
-    <!-- 省略脚部内容 -->
-    <script>
-        // WebSocket 代码省略
-
-        function startVoiceChat() {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                .then(stream => {
-                    const audio = document.createElement('audio');
-                    audio.srcObject = stream;
-                    audio.play();
-                })
-                .catch(err => {
-                    console.error('获取音频流失败:', err);
-                });
-        }
-    </script>
-        <div id="chat" class="content-section">
-            <h2>连线聊天</h2>
-            <div class="chat-container">
-                <div class="chat-messages" id="chat-messages"></div>
-                <div class="chat-input">
-                    <input type="text" id="chat-input" placeholder="输入消息...">
-                    <button onclick="sendMessage()">发送</button>
-                </div>
+        <div id="voice-chat" class="content-section">
+            <h2>语音对话</h2>
+            <div class="voice-chat-container">
+                <button onclick="startVoiceChat()">开始语音聊天</button>
+                <button onclick="stopVoiceChat()">结束语音聊天</button>
+                <audio id="localAudio" autoplay></audio>
+                <audio id="remoteAudio" autoplay></audio>
             </div>
         </div>
     </div>
@@ -249,32 +187,76 @@
             if (message.trim() !== '') {
                 ws.send(message);
                 input.value = '';
+                const chatMessages = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = message;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight; // 自动滚动到底部
             }
         }
-    </script>
-    </div>
-    <footer>
-        <p>版权所有 &copy; 2024 教会名. 保留所有权利.</p>
-    </footer>
-    <script>
-        const ws = new WebSocket('ws://localhost:8080');
 
-        ws.onmessage = (event) => {
-            const chatMessages = document.getElementById('chat-messages');
-            const message = document.createElement('div');
-            message.textContent = event.data;
-            chatMessages.appendChild(message);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // 自动滚动到底部
+        let localStream;
+        let peerConnection;
+        const configuration = {
+            'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
         };
 
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value;
-            if (message.trim() !== '') {
-                ws.send(message);
-                input.value = '';
+        function startVoiceChat() {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                .then(stream => {
+                    localStream = stream;
+                    document.getElementById('localAudio').srcObject = stream;
+
+                    peerConnection = new RTCPeerConnection(configuration);
+                    peerConnection.addStream(localStream);
+
+                    peerConnection.onaddstream = event => {
+                        document.getElementById('remoteAudio').srcObject = event.stream;
+                    };
+
+                    peerConnection.onicecandidate = event => {
+                        if (event.candidate) {
+                            ws.send(JSON.stringify({ 'candidate': event.candidate }));
+                        }
+                    };
+
+                    peerConnection.createOffer()
+                        .then(offer => {
+                            return peerConnection.setLocalDescription(offer);
+                        })
+                        .then(() => {
+                            ws.send(JSON.stringify({ 'sdp': peerConnection.localDescription }));
+                        });
+                })
+                .catch(err => {
+                    console.error('获取音频流失败:', err);
+                });
+        }
+
+        function stopVoiceChat() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            if (peerConnection) {
+                peerConnection.close();
             }
         }
-    </script>
-</body>
-</html>
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.sdp) {
+                peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
+                    .then(() => {
+                        if (peerConnection.remoteDescription.type === 'offer') {
+                            peerConnection.createAnswer()
+                                .then(answer => {
+                                    return peerConnection.setLocalDescription(answer);
+                                })
+                                .then(() => {
+                                    ws.send(JSON.stringify({ 'sdp': peerConnection.localDescription }));
+                                });
+                        }
+                    });
+            } else if (data.candidate) {
+                peerConnection.addIceCandidate
