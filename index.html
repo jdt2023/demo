@@ -1,10 +1,4 @@
-了解了你的问题后，首先确保发送的信息正确显示在页面上，然后确保这些消息能够通过WebSocket正确发送。我们来调整代码以确保发送的信息显示在网页上。
 
-### 前端代码
-
-调整HTML和JavaScript代码，确保发送的信息能显示在聊天窗口中：
-
-```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -112,6 +106,11 @@
         .chat-input button:hover {
             background-color: #45a049;
         }
+        .voice-chat-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -159,7 +158,6 @@
                 <div class="chat-input">
                     <input type="text" id="chat-input" placeholder="输入消息...">
                     <button onclick="sendMessage()">发送</button>
-                    <button onclick="startVoiceChat()">语音聊天</button>
                 </div>
             </div>
         </div>
@@ -270,9 +268,4 @@
         };
     </script>
 </body>
-</html>
-```
-
-### 服务器代码
-
-确保WebSocket
+</html
