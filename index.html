@@ -74,6 +74,7 @@
             border: 1px solid #ccc;
             padding: 10px;
             margin: 20px 0;
+            max-width: 600px;
         }
         .chat-messages {
             max-height: 300px;
@@ -89,6 +90,7 @@
             flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
+            box-sizing: border-box;
         }
         .chat-input button {
             padding: 10px;
@@ -96,6 +98,7 @@
             background-color: #4CAF50;
             color: white;
             cursor: pointer;
+            flex-shrink: 0;
         }
         .chat-input button:hover {
             background-color: #45a049;
@@ -162,13 +165,16 @@
             const message = document.createElement('div');
             message.textContent = event.data;
             chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // 自动滚动到底部
         };
 
         function sendMessage() {
             const input = document.getElementById('chat-input');
             const message = input.value;
-            ws.send(message);
-            input.value = '';
+            if (message.trim() !== '') {
+                ws.send(message);
+                input.value = '';
+            }
         }
     </script>
 </body>
