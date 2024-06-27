@@ -1,4 +1,10 @@
+了解了你的问题后，首先确保发送的信息正确显示在页面上，然后确保这些消息能够通过WebSocket正确发送。我们来调整代码以确保发送的信息显示在网页上。
 
+### 前端代码
+
+调整HTML和JavaScript代码，确保发送的信息能显示在聊天窗口中：
+
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -259,4 +265,14 @@
                         }
                     });
             } else if (data.candidate) {
-                peerConnection.addIceCandidate
+                peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+            }
+        };
+    </script>
+</body>
+</html>
+```
+
+### 服务器代码
+
+确保WebSocket
