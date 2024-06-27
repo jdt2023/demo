@@ -1,0 +1,25 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+
+let messages = [];
+
+app.use(bodyParser.json());
+
+app.get('/messages', (req, res) => {
+  res.json(messages);
+});
+
+app.post('/messages', (req, res) => {
+  const message = req.body.message;
+  if (message) {
+    messages.push(message);
+    res.status(201).send();
+  } else {
+    res.status(400).send();
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
