@@ -159,7 +159,48 @@
                     <input type="text" id="chat-input" placeholder="输入消息...">
                     <button onclick="sendMessage()">发送</button>
                 </div>
-            </div>
+            </div><div class="chat-container">
+  <div class="messages">
+    <!-- 聊天消息 -->
+  </div>
+  <div class="input-container">
+    <!-- 输入框 -->
+  </div>
+  <button class="voice-toggle">语音开关</button>
+</div>body {
+  margin: 0;
+  padding: 0;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 60px; /* 确保底部有足够的空间 */
+}
+
+.input-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.voice-toggle {
+  position: fixed;
+  bottom: 70px; /* 确保在输入框上方 */
+  right: 20px;
+  z-index: 1000;
+}
+
+
         </div>
         <div id="voice-chat" class="content-section">
             <h2>语音对话</h2>
@@ -169,7 +210,16 @@
                 <audio id="localAudio" autoplay></audio>
                 <audio id="remoteAudio" autoplay></audio>
             </div>
-        </div>
+        </div><div class="chat-container">
+  <div class="messages">
+    <!-- 聊天消息 -->
+  </div>
+  <div class="input-container">
+    <!-- 输入框 -->
+  </div>
+  <button class="voice-toggle">语音开关</button>
+</div>
+
     </div>
     <footer>
         <p>版权所有 &copy; 2024 教会名. 保留所有权利.</p>
@@ -272,15 +322,6 @@
 
 
 
-<div class="chat-container">
-  <div class="messages">
-    <!-- 聊天消息 -->
-  </div>
-  <div class="input-container">
-    <!-- 输入框 -->
-  </div>
-  <button class="voice-toggle">语音开关</button>
-</div>
 
 </body>
 </html
