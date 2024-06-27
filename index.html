@@ -185,8 +185,193 @@
     <!-- 输入框 -->
   </div>
   <button class="voice-toggle">语音开关</button>
-</div>
+</div>document.addEventListener("DOMContentLoaded", function() {
+  let db;
+  const messagesContainer = document.querySelector('.messages');
+  const inputField = document.querySelector('.input-container input');
+  const sendButton = document.querySelector('.input-container button');
 
+  const request = indexedDB.open('chatDatabase', 1);
+
+  request.onupgradeneeded = function(event) {
+    db = event.target.result;
+    const objectStore = db.createObjectStore('messages', { autoIncrement: true });
+  };
+
+  request.onsuccess = function(event) {
+    db = event.target.result;
+
+    // 加载消息
+    const transaction = db.transaction(['messages'], 'readonly');
+    const objectStore = transaction.objectStore('messages');
+    objectStore.openCursor().onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = cursor.value;
+        messagesContainer.appendChild(messageElement);
+        cursor.continue();
+      }
+    };
+  };
+
+  sendButton.addEventListener('click', function() {
+    const message = inputField.value;
+    if (message) {
+      const transaction = db.transaction(['messages'], 'readwrite');
+      const objectStore = transaction.objectStore('messages');
+      objectStore.add(message);
+
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      messagesContainer.appendChild(messageElement);
+
+      inputField.value = ''; // 清空输入框
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  const messagesContainer = document.querySelector('.messages');
+  const inputField = document.querySelector('.input-container input');
+  const sendButton = document.querySelector('.input-container button');
+
+  // 从 LocalStorage 中加载消息
+  const savedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+  savedMessages.forEach(message => {
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+    messagesContainer.appendChild(messageElement);
+  });
+
+  // 发送消息
+  sendButton.addEventListener('click', function() {
+    const message = inputField.value;
+    if (message) {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      messagesContainer.appendChild(messageElement);
+
+      // 保存消息到 LocalStorage
+      savedMessages.push(message);
+      localStorage.setItem('chatMessages', JSON.stringify(savedMessages));
+
+      inputField.value = ''; // 清空输入框
+    }
+  });
+});
+
+
+        const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+
+let messages = [];
+
+app.use(bodyParser.json());
+
+app.get('/messages', (req, res) => {
+  res.json(messages);
+});
+
+app.post('/messages', (req, res) => {
+  const message = req.body.message;
+  if (message) {
+    messages.push(message);
+    res.status(201).send();
+  } else {
+    res.status(400).send();
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  const messagesContainer = document.querySelector('.messages');
+  const inputField = document.querySelector('.input-container input');
+  const sendButton = document.querySelector('.input-container button');
+
+  // 从服务器加载消息
+  fetch('/messages')
+    .then(response => response.json())
+    .then(messages => {
+      messages.forEach(message => {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messagesContainer.appendChild(messageElement);
+      });
+    });
+
+  // 发送消息到服务器
+  sendButton.addEventListener('click', function() {
+    const message = inputField.value;
+    if (message) {
+      fetch('/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: message })
+      }).then(() => {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messagesContainer.appendChild(messageElement);
+        inputField.value = ''; // 清空输入框
+      });
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  let db;
+  const messagesContainer = document.querySelector('.messages');
+  const inputField = document.querySelector('.input-container input');
+  const sendButton = document.querySelector('.input-container button');
+
+  const request = indexedDB.open('chatDatabase', 1);
+
+  request.onupgradeneeded = function(event) {
+    db = event.target.result;
+    const objectStore = db.createObjectStore('messages', { autoIncrement: true });
+  };
+
+  request.onsuccess = function(event) {
+    db = event.target.result;
+
+    // 加载消息
+    const transaction = db.transaction(['messages'], 'readonly');
+    const objectStore = transaction.objectStore('messages');
+    objectStore.openCursor().onsuccess = function(event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = cursor.value;
+        messagesContainer.appendChild(messageElement);
+        cursor.continue();
+      }
+    };
+  };
+
+  sendButton.addEventListener('click', function() {
+    const message = inputField.value;
+    if (message) {
+      const transaction = db.transaction(['messages'], 'readwrite');
+      const objectStore = transaction.objectStore('messages');
+      objectStore.add(message);
+
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      messagesContainer.appendChild(messageElement);
+
+      inputField.value = ''; // 清空输入框
+    }
+  });
+});
+
+            
+            
     </div>
 
       
