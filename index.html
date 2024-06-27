@@ -75,6 +75,7 @@
             padding: 10px;
             margin: 20px 0;
             max-width: 600px;
+            position: relative;
         }
         .chat-messages {
             max-height: 300px;
@@ -144,6 +145,38 @@
             <p>电话：123-456-7890</p>
             <p>邮箱：info@church.com</p>
         </div>
+<head>
+    <!-- 省略头部内容 -->
+</head>
+<body>
+    <!-- 省略主体内容 -->
+    <div id="chat" class="content-section">
+        <h2>连线聊天</h2>
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="输入消息...">
+                <button onclick="sendMessage()">发送</button>
+                <button onclick="startVoiceChat()">语音聊天</button>
+            </div>
+        </div>
+    </div>
+    <!-- 省略脚部内容 -->
+    <script>
+        // WebSocket 代码省略
+
+        function startVoiceChat() {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                .then(stream => {
+                    const audio = document.createElement('audio');
+                    audio.srcObject = stream;
+                    audio.play();
+                })
+                .catch(err => {
+                    console.error('获取音频流失败:', err);
+                });
+        }
+    </script>
         <div id="chat" class="content-section">
             <h2>连线聊天</h2>
             <div class="chat-container">
