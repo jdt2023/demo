@@ -156,6 +156,45 @@
 <body>
     <header>
         <h1>欢迎来到我们的社区</h1>
+
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Button</title>
+    <style>
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="search-container">
+    <input type="text" class="search-input" placeholder="请输入搜索内容">
+    <button class="search-button">点击搜索</button>
+</div>
+	    
     </header>
     <nav>
         <a href="#home">主页</a>
