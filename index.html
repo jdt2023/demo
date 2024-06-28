@@ -188,32 +188,7 @@
 </head>
 <body>
 
-function search() {
-    const query = document.getElementById('searchBox').value.toLowerCase();
-    const content = document.body.innerText.toLowerCase();
-    const resultsDiv = document.getElementById('searchResults');
-    resultsDiv.innerHTML = '';
 
-    if (query.length > 0) {
-        const indices = [];
-        let startIndex = 0;
-        while (startIndex < content.length) {
-            const index = content.indexOf(query, startIndex);
-            if (index === -1) break;
-            indices.push(index);
-            startIndex = index + query.length;
-        }
-
-        if (indices.length > 0) {
-            resultsDiv.innerHTML = `Found ${indices.length} result(s):<br>`;
-            indices.forEach((index, i) => {
-                resultsDiv.innerHTML += `Result ${i + 1}: ...${content.substring(index - 30, index + 30)}...<br>`;
-            });
-        } else {
-            resultsDiv.innerHTML = 'No results found.';
-        }
-    }
-}
 
 
 	    
