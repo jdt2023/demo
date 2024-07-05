@@ -1,168 +1,17 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="zh-CN" prefix="og: https://ogp.me/ns#">
+<html lang="en">
 <head>
-    
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="google-site-verification" content="_aLVGG6qhW4J40DZgHAuJuHgf8sRAC7g5CWs9fCNo7A"/>
-    <link rel="profile" href="https://gmpg.org/xfn/11">
-
-	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Button</title>
-    <style>
-        .search-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .search-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .search-button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本编辑器</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-
-</div>
-
-
-
-
-
-            <h2>在这里编辑你的发帖内容确定无误以后<br/>全选复制粘贴到你的发帖平台后点击发送</h2>
-            <div class="chat-container">
-                <div class="chat-messages" id="chat-messages"></div>
-                <div class="chat-input">
-                    <input type="text" id="chat-input" placeholder="输入消息...">
-                    <button onclick="sendMessage()">发送</button>
-                </div>
-            </div><div class="chat-container">
-  <div class="messages">
-    <!-- 聊天消息 -->
-  </div>
-  <div class="input-container">
-    <!-- 输入框 -->
-
-  
-    <script>
-        const ws = new WebSocket('ws://localhost:8080');
-
-        ws.onmessage = (event) => {
-            const chatMessages = document.getElementById('chat-messages');
-            const message = document.createElement('div');
-            message.textContent = event.data;
-            chatMessages.appendChild(message);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // 自动滚动到底部
-        };
-
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value;
-            if (message.trim() !== '') {
-                ws.send(message);
-                input.value = '';
-                const chatMessages = document.getElementById('chat-messages');
-                const messageDiv = document.createElement('div');
-                messageDiv.textContent = message;
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight; // 自动滚动到底部
-            }
-        }
-
-        let localStream;
-        let peerConnection;
-        const configuration = {
-            'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
-        };
-
-        function startVoiceChat() {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                .then(stream => {
-                    localStream = stream;
-                    document.getElementById('localAudio').srcObject = stream;
-
-                    peerConnection = new RTCPeerConnection(configuration);
-                    peerConnection.addStream(localStream);
-
-                    peerConnection.onaddstream = event => {
-                        document.getElementById('remoteAudio').srcObject = event.stream;
-                    };
-
-                    peerConnection.onicecandidate = event => {
-                        if (event.candidate) {
-                            ws.send(JSON.stringify({ 'candidate': event.candidate }));
-                        }
-                    };
-
-                    peerConnection.createOffer()
-                        .then(offer => {
-                            return peerConnection.setLocalDescription(offer);
-                        })
-                        .then(() => {
-                            ws.send(JSON.stringify({ 'sdp': peerConnection.localDescription }));
-                        });
-                })
-                .catch(err => {
-                    console.error('获取音频流失败:', err);
-                });
-        }
-
-        function stopVoiceChat() {
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-            }
-            if (peerConnection) {
-                peerConnection.close();
-            }
-        }
-
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-
-            if (data.sdp) {
-                peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
-                    .then(() => {
-                        if (peerConnection.remoteDescription.type === 'offer') {
-                            peerConnection.createAnswer()
-                                .then(answer => {
-                                    return peerConnection.setLocalDescription(answer);
-                                })
-                                .then(() => {
-                                    ws.send(JSON.stringify({ 'sdp': peerConnection.localDescription }));
-                                });
-                        }
-                    });
-            } else if (data.candidate) {
-                peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-            }
-        };
-    </script>
-
-
-
-
-
-  <footer>
-        <p>版权所有 &copy; 2024 jdt1789 保留所有权利.</p>
-    </footer>
-
+    <div class="editor-container">
+        <textarea id="editor" placeholder="在这里输入文本..."></textarea>
+        <button id="saveButton">保存文本</button>
+        <button id="clearButton">清空文本</button>
+    </div>
+    <script src="script.js"></script>
 </body>
-</html
+</html>
